@@ -1,39 +1,31 @@
-// --- MÁQUINA DE ESTADOS E RECURSOS ---
-let estadoJogo = "MENU"; // MENU, FASE1, GAMEOVER
+let estadoJogo = "MENU"; 
 let folhas = [];
 let tempoAnimacao = 0;
 
-// Economia e Variáveis de Equilíbrio Ecológico
 let moedas = 100; 
 let producao = 40;
 let sustentabilidade = 60;
 
-// --- SISTEMA DE CLIMA DINÂMICO ---
-let climaAtual = "LIMP"; // LIMP (Normal), CHUVA (Rápido), SECA (Lento)
+let climaAtual = "LIMP"; 
 let tempoClima = 0;
 
-// --- SISTEMA DE CRÉDITO COOPERATIVO (PRONAF VERDE) ---
 let dividaAtiva = 0;
-let jurosTaxa = 0.15; // 15% padrão
+let jurosTaxa = 0.15; 
 let tempoParaCobrança = 0; 
 let valorEmprestimoDisponivel = 0; 
 let ofertaGerada = false;
-let tipoCreditoOfertado = "Padrão"; // Padrão ou PRONAF Bio
+let tipoCreditoOfertado = "Padrão"; 
 
-// --- REGENERAÇÃO E ROTAÇÃO DE CULTURAS ---
 let tempoSemPlantar = 0; 
 let culturaSelecionada = "MILHO"; 
 
-// --- CONTROLE DE INTERFACE (MODAIS SOBREPOSTOS) ---
-let abaAberta = "NENHUMA"; // NENHUMA, SEMENTES, BANCO, TECH, MERCADO, DEFESA
+let abaAberta = "NENHUMA"; 
 
-// Estrutura do Grid da Fazenda
 let colunas = 3;
 let linhas = 3;
 let gridTerrenos = [];
 let tamanhoBloco = 120; 
 
-// Layout Ajustado (Sidebar Fina na Esquerda, Fazenda Centralizada/Direita)
 let gridOffsetX = 480;  
 let gridOffsetY = 150;
 
@@ -44,31 +36,24 @@ let listaFalas = [
 ];
 let falaAtual = "";
 
-// ==========================================
-// 🚀 VARIÁVEIS DAS MECÂNICAS AGRINHO
-// ==========================================
-// 1. Upgrades Tecnológicos
+
 let temSensorIoT = false;
 let temCisterna = false;
 let temCurvaNivel = false;
-let temDronePest = false; // Reduz incidência de pragas
+let temDronePest = false;
 
-// 2. Mercado Dinâmico (Preços base são $50)
 let precoMilho = 50;
 let precoSoja = 50;
 
-// 3. Seguro Rural
 let seguroContratado = false;
 
-// 4. Polinizadores (Abelhas)
 let abelhasAtivas = false;
 let tempoAbelhaX = 0; 
 
-// 5. Sistema de Pragas Dinâmicas (MIP Ajustado)
 let tempoAparicaoPraga = 0;
 let blocoInfectadoX = -1;
 let blocoInfectadoY = -1;
-let tempoVidaPraga = 0; // Tempo que o jogador tem para tratar antes da planta morrer
+let tempoVidaPraga = 0;
 
 function setup() {
     let canvas = createCanvas(1280, 600);
@@ -77,7 +62,6 @@ function setup() {
 
     falaAtual = random(listaFalas);
 
-    // Inicializa as folhas decorativas
     for (let i = 0; i < 25; i++) {
         folhas.push(new Folha());
     }
@@ -104,11 +88,11 @@ function recalcularOfertaBanco() {
     if (sustentabilidade >= 80) {
         tipoCreditoOfertado = "PRONAF Bio";
         valorEmprestimoDisponivel = Math.round(base * 4.0); 
-        jurosTaxa = 0.05; // Juros caem para 5%
+        jurosTaxa = 0.05; 
     } else {
         tipoCreditoOfertado = "Padrão";
         valorEmprestimoDisponivel = Math.round(base * random(1.5, 2.5));
-        jurosTaxa = 0.15; // 15%
+        jurosTaxa = 0.15; 
     }
     ofertaGerada = true;
 }
@@ -123,9 +107,6 @@ function draw() {
     }
 }
 
-// ==========================================
-// 📺 TELA 1: MENU INICIAL
-// ==========================================
 function desenharMenu() {
     background("#87CEEB"); 
     cursor(ARROW);
@@ -176,14 +157,10 @@ function desenharMascote(x, y) {
     fill("#00e676"); rect(x - 27, y - 93 + respiracao, 54, 5);
 }
 
-// ==========================================
-// 🌾 TELA 2: MECÂNICAS PRINCIPAIS (FASE 1)
-// ==========================================
 function jogabilidadeFase1() {
     background("#f1f8e9"); 
     let cursorDefinido = false;
 
-    // --- EVENTOS CLIMÁTICOS E MERCADO (A cada 15 segundos) ---
     tempoClima += 1;
     if (tempoClima >= 900) {
         let sorteio = random(["LIMP", "CHUVA", "SECA"]);
@@ -195,8 +172,6 @@ function jogabilidadeFase1() {
         if (climaAtual === "SECA") { precoMilho = 75; precoSoja = 80; }  
     }
 
-    // --- TEMPO AJUSTADO: GERAÇÃO PERIÓDICA DE PRAGAS ---
-    // 7200 frames = 120 segundos (2 minutos) | 10800 frames = 180 segundos (3 minutos com drone)
     tempoAparicaoPraga += 1;
     let gatilhoPraga = temDronePest ? 10800 : 7200; 
     
@@ -219,7 +194,6 @@ function jogabilidadeFase1() {
         }
     }
 
-    // Lógica de definhamento da planta infectada (Jogador tem 15s para agir)
     if (blocoInfectadoX !== -1) {
         tempoVidaPraga += 1;
         if (tempoVidaPraga >= 900) { 
@@ -233,11 +207,9 @@ function jogabilidadeFase1() {
         }
     }
 
-    // Ativação das Abelhas
     if (sustentabilidade >= 90) abelhasAtivas = true;
     else abelhasAtivas = false;
 
-    // --- LÓGICA DE COBRANÇA E JUROS ---
     if (dividaAtiva > 0) {
         tempoParaCobrança += 1;
         if (tempoParaCobrança >= 600) { 
@@ -248,7 +220,6 @@ function jogabilidadeFase1() {
         }
     }
 
-    // --- REGENERAÇÃO POR DESCANSO DA TERRA ---
     tempoSemPlantar += 1;
     if (tempoSemPlantar > 300) { 
         let fatorRegeneracao = map(tempoSemPlantar, 300, 1200, 0.02, 0.08, true);
@@ -257,9 +228,6 @@ function jogabilidadeFase1() {
 
     if (moedas < 0) { estadoJogo = "GAMEOVER"; return; }
 
-    // ========================================================
-    // HUD SUPERIOR INFORMATIVO
-    // ========================================================
     fill(255); noStroke();
     rect(315, 15, width - 330, 80, 15);
     
@@ -274,7 +242,6 @@ function jogabilidadeFase1() {
     fill(0); textSize(18); text(`💵 Carteira: $${moedas}`, 550, 55);
     if (dividaAtiva > 0) { fill("#d32f2f"); text(`🏦 Dívida: -$${dividaAtiva}`, 710, 55); }
 
-    // Barras de Status
     fill(0); textSize(14); text("🚜 Produção:", 870, 55);
     fill(220); rect(960, 47, 80, 16, 4);
     fill(50, 200, 50); rect(960, 47, map(producao, 0, 100, 0, 80), 16, 4);
@@ -289,9 +256,6 @@ function jogabilidadeFase1() {
         text("⚠️ ALERTA: Lavoura Sofrendo Ataque de Pragas!", 550, 83);
     }
 
-    // ========================================================
-    // RENDERIZAÇÃO DO GRID DE TERRENOS
-    // ========================================================
     for (let i = 0; i < colunas; i++) {
         for (let j = 0; j < linhas; j++) {
             let item = gridTerrenos[i][j];
@@ -336,9 +300,6 @@ function jogabilidadeFase1() {
         }
     }
 
-    // ========================================================
-    // 🗂️ SIDEBAR DE LINKS 
-    // ========================================================
     let sideW = 280;
     fill("#1b5e20"); noStroke();
     rect(0, 0, sideW, height);
@@ -348,14 +309,12 @@ function jogabilidadeFase1() {
     text("🚜 GESTÃO AGRÍCOLA", 25, 25);
     stroke("rgba(255,255,255,0.15)"); line(25, 55, sideW - 25, 55); noStroke();
 
-    // LINK 1: Catálogo de Sementes
     let l1Y = 75;
     if (abaAberta === "SEMENTES") fill("#2e7d32"); else fill("rgba(255,255,255,0.05)");
     if (mouseX > 20 && mouseX < sideW - 20 && mouseY > l1Y && mouseY < l1Y + 40) { fill("rgba(255,255,255,0.15)"); cursor(HAND); cursorDefinido = true; }
     rect(20, l1Y, sideW - 40, 40, 8); fill(255); textSize(13); textAlign(LEFT, CENTER); textStyle(BOLD);
     text("🌱 Escolher Sementes", 35, l1Y + 20); text(culturaSelecionada === "MILHO" ? "🌽" : "🌿", sideW - 45, l1Y + 20);
 
-    // LINK 2: Cooperativa de Crédito e Seguro
     let l2Y = 125;
     if (abaAberta === "BANCO") fill("#2e7d32"); else fill("rgba(255,255,255,0.05)");
     if (mouseX > 20 && mouseX < sideW - 20 && mouseY > l2Y && mouseY < l2Y + 40) { fill("rgba(255,255,255,0.15)"); cursor(HAND); cursorDefinido = true; }
@@ -364,21 +323,18 @@ function jogabilidadeFase1() {
     if (seguroContratado) { fill("#64b5f6"); rect(sideW - 48, l2Y + 13, 14, 14, 3); fill(255); textSize(9); textStyle(NORMAL); text("🛡️", sideW - 45, l2Y + 21); }
     if (sustentabilidade >= 80) { fill("#ffb300"); rect(sideW - 95, l2Y + 12, 42, 16, 4); fill(0); textSize(8); textStyle(BOLD); text("PRONAF", sideW - 91, l2Y + 21); }
 
-    // LINK 3: Mercado e Commodities
     let l3Y = 175;
     if (abaAberta === "MERCADO") fill("#2e7d32"); else fill("rgba(255,255,255,0.05)");
     if (mouseX > 20 && mouseX < sideW - 20 && mouseY > l3Y && mouseY < l3Y + 40) { fill("rgba(255,255,255,0.15)"); cursor(HAND); cursorDefinido = true; }
     rect(20, l3Y, sideW - 40, 40, 8); fill(255); textSize(13); textAlign(LEFT, CENTER); textStyle(BOLD);
     text("📉 Mercado & Cotações", 35, l3Y + 20);
 
-    // LINK 4: Tecnologia IoT e Upgrades
     let l4Y = 225;
     if (abaAberta === "TECH") fill("#2e7d32"); else fill("rgba(255,255,255,0.05)");
     if (mouseX > 20 && mouseX < sideW - 20 && mouseY > l4Y && mouseY < l4Y + 40) { fill("rgba(255,255,255,0.15)"); cursor(HAND); cursorDefinido = true; }
     rect(20, l4Y, sideW - 40, 40, 8); fill(255); textSize(13); textAlign(LEFT, CENTER); textStyle(BOLD);
     text("🔬 Tecnologia & Upgrades", 35, l4Y + 20);
 
-    // LINK 5: Defesa da Lavoura (MIP)
     let l5Y = 275;
     if (abaAberta === "DEFESA") fill("#2e7d32"); else fill("rgba(255,255,255,0.05)");
     if (blocoInfectadoX !== -1) { fill("rgba(211, 47, 47, 0.2)"); } 
@@ -389,7 +345,6 @@ function jogabilidadeFase1() {
     fill("#a5d6a7"); textSize(11); textAlign(CENTER, CENTER); textStyle(NORMAL);
     text("Painel de Controle v3.1 (MIP Ajustado)\nClique nas abas para gerenciar.", sideW / 2, height - 35);
 
-    // Animação Livre das Abelhas
     if (abelhasAtivas) {
         tempoAbelhaX += 0.02;
         let abelhaY = 320 + sin(tempoAbelhaX * 4) * 35;
@@ -402,9 +357,6 @@ function jogabilidadeFase1() {
         fill(255); textSize(11); textStyle(BOLD); text("🐝 Polinização Ativa: +20% Crescimento", 1137, 117);
     }
 
-    // ========================================================
-    // 🗟 MODAIS SOBREPOSTOS
-    // ========================================================
     if (abaAberta !== "NENHUMA") {
         fill(0, 120);
         rect(sideW, 0, width - sideW, height);
@@ -505,7 +457,6 @@ function jogabilidadeFase1() {
             fill(0); textSize(20); textStyle(BOLD); text("Centro de Tecnologia de Precisão", cxX + 35, cxY + 25);
             fill(100); textSize(13); textStyle(NORMAL); text("Modernize sua propriedade para mitigar riscos ambientais:", cxX + 35, cxY + 48);
 
-            // Item 1: Sensores IoT
             fill(temSensorIoT ? "#e8f5e9" : 245); rect(cxX + 35, cxY + 75, 470, 75, 8);
             fill(0); textSize(13); textStyle(BOLD); textAlign(LEFT, CENTER); text("📡 Sensores de Solo IoT (Custo: $40)", cxX + 50, cxY + 98);
             textSize(11); textStyle(NORMAL); fill(80); text("Reduz o desgaste ecológico ao plantar em qualquer clima.", cxX + 50, cxY + 122);
@@ -514,7 +465,6 @@ function jogabilidadeFase1() {
                 rect(cxX + 380, cxY + 88, 105, 28, 5); fill(255); textAlign(CENTER, CENTER); textStyle(BOLD); text("COMPRAR", cxX + 432, cxY + 102);
             } else { fill(120); textAlign(CENTER, CENTER); textStyle(BOLD); text("ATIVO ✔️", cxX + 432, cxY + 102); }
 
-            // Item 2: Cisterna de Captação
             fill(temCisterna ? "#e8f5e9" : 245); rect(cxX + 35, cxY + 160, 470, 75, 8);
             fill(0); textSize(13); textStyle(BOLD); textAlign(LEFT, CENTER); text("💧 Cisternas de Água (Custo: $50)", cxX + 50, cxY + 183);
             textSize(11); textStyle(NORMAL); fill(80); text("Acelera a velocidade de crescimento no período de Seca.", cxX + 50, cxY + 207);
@@ -523,7 +473,6 @@ function jogabilidadeFase1() {
                 rect(cxX + 380, cxY + 173, 105, 28, 5); fill(255); textAlign(CENTER, CENTER); textStyle(BOLD); text("COMPRAR", cxX + 432, cxY + 187);
             } else { fill(120); textAlign(CENTER, CENTER); textStyle(BOLD); text("ATIVO ✔️", cxX + 432, cxY + 187); }
 
-            // Item 3: Curvas de Nível
             fill(temCurvaNivel ? "#e8f5e9" : 245); rect(cxX + 35, cxY + 245, 470, 75, 8);
             fill(0); textSize(13); textStyle(BOLD); textAlign(LEFT, CENTER); text("⛰️ Curvas de Nível (Custo: $40)", cxX + 50, cxY + 268);
             textSize(11); textStyle(NORMAL); fill(80); text("Aumenta o bônus de regeneração do solo na rotação.", cxX + 50, cxY + 292);
@@ -532,7 +481,6 @@ function jogabilidadeFase1() {
                 rect(cxX + 380, cxY + 258, 105, 28, 5); fill(255); textAlign(CENTER, CENTER); textStyle(BOLD); text("COMPRAR", cxX + 432, cxY + 272);
             } else { fill(120); textAlign(CENTER, CENTER); textStyle(BOLD); text("ATIVO ✔️", cxX + 432, cxY + 272); }
 
-            // Item 4: Drones de Monitoramento MIP
             fill(temDronePest ? "#e8f5e9" : 245); rect(cxX + 35, cxY + 330, 470, 75, 8);
             fill(0); textSize(13); textStyle(BOLD); textAlign(LEFT, CENTER); text("🛸 Drone de Monitoramento (Custo: $55)", cxX + 50, cxY + 353);
             textSize(11); textStyle(NORMAL); fill(80); text("Tecnologia de precisão que amplia o tempo seguro sem pragas para 3 min.", cxX + 50, cxY + 377);
@@ -542,7 +490,6 @@ function jogabilidadeFase1() {
             } else { fill(120); textAlign(CENTER, CENTER); textStyle(BOLD); text("ATIVO ✔️", cxX + 432, cxY + 357); }
         }
 
-        // MODAL 5: DEFESA DA LAVOURA (Manejo Integrado de Pragas)
         if (abaAberta === "DEFESA") {
             fill(0); textSize(20); textStyle(BOLD); text("Manejo Integrado de Pragas (MIP)", cxX + 35, cxY + 30);
             fill(100); textSize(13); textStyle(NORMAL); text("Monitore e combata infestações escolhendo sua estratégia:", cxX + 35, cxY + 55);
@@ -582,9 +529,6 @@ function jogabilidadeFase1() {
     if (!cursorDefinido) cursor(ARROW);
 }
 
-// ==========================================
-// 💀 TELA 3: TELA DE GAME OVER
-// ==========================================
 function desenharGameOver() {
     background("#212121"); cursor(ARROW);
     textAlign(CENTER, CENTER); fill("#e53935"); textSize(55); textStyle(BOLD);
@@ -597,9 +541,6 @@ function desenharGameOver() {
     fill(255); textSize(16); textStyle(BOLD); text("TENTAR NOVAMENTE", rX + 120, rY + 25); textStyle(NORMAL);
 }
 
-// ==========================================
-// 🖱️ INTERAÇÃO DE CLIQUES (GATILHOS)
-// ==========================================
 function mousePressed() {
     if (estadoJogo === "MENU") {
         let btnX = width / 2 - 110; let btnY = 500;
@@ -685,7 +626,6 @@ function mousePressed() {
             return; 
         }
 
-        // Cliques para alternar as abas
         if (mouseX > 20 && mouseX < sideW - 20 && mouseY > 75 && mouseY < 115) { abaAberta = "SEMENTES"; return; }
         if (mouseX > 20 && mouseX < sideW - 20 && mouseY > 125 && mouseY < 165) { abaAberta = "BANCO"; return; }
         if (mouseX > 20 && mouseX < sideW - 20 && mouseY > 175 && mouseY < 215) { abaAberta = "MERCADO"; return; }
@@ -765,3 +705,5 @@ function mousePressed() {
         }
     }
 }
+
+//Gabriel Rodrigues de Lima - Projeto Agrinho 2026
