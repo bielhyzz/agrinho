@@ -1,7 +1,33 @@
-Código completo "sketch.js"
+# Apresentação | ECOFAZENDA - by Gabriel
 
+# Objetivo:
+- Criar um jogo interativo para os jogadores, e consequentemente contribuir para o Projeto Agrinho 2026;
+- Divertir os jogadores;
+- Se especializar em desenvolvimento de softwares.
 
-let estadoJogo = "MENU"; 
+---
+
+# Liguagens e bibliotecas usadas:
+
+```
+Linguagens Principais: Javascript [ES2025] | HTML5 | CSS3
+Biblioteca Principal: P5.JS [2.2.2] [https://p5js.org/]
+
+```
+
+---
+
+# Criação
+
+- Jogo criado inteiramente pelo VS CODE;
+- Hospedado no GitHub;
+- Hospedado no GitHub Pages em: https://bielhyzz.github.io/agrinho
+
+---
+
+# Acompanhe abaixo todo o arquivo "sketch.js":
+
+```let estadoJogo = "MENU"; 
 let folhas = [];
 let tempoAnimacao = 0;
 
@@ -707,6 +733,6 @@ function mousePressed() {
             recalcularOfertaBanco(); 
         }
     }
-}
+}```
 
 //Gabriel Rodrigues de Lima - Projeto Agrinho 2026
